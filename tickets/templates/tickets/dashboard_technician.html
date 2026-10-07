@@ -1,0 +1,16 @@
+{% extends 'tickets/base.html' %}{% block title %}IT Support Dashboard{% endblock %}{% block page_label %}IT Support Workspace{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">IT SUPPORT</span><h1>Support Dashboard</h1><p>Overview of current IT support activity and workload.</p></div><a class="btn primary" href="{% url 'all_tickets' %}">View All Tickets →</a></div>
+<div class="stat-grid five">
+<div class="stat-card"><span class="stat-icon blue">◫</span><div><small>Total Tickets</small><strong>{{ stats.total }}</strong></div></div>
+<div class="stat-card"><span class="stat-icon amber">◷</span><div><small>Pending</small><strong>{{ stats.pending }}</strong></div></div>
+<div class="stat-card"><span class="stat-icon purple">↻</span><div><small>In Progress</small><strong>{{ stats.progress }}</strong></div></div>
+<div class="stat-card"><span class="stat-icon green">✓</span><div><small>Resolved</small><strong>{{ stats.resolved }}</strong></div></div>
+<div class="stat-card"><span class="stat-icon red">!</span><div><small>Active Queue</small><strong>{{ stats.overdue }}</strong></div></div>
+</div>
+<div class="section-head"><div><h2>Recent Tickets</h2><p>Review, prioritize, assign, and resolve support concerns.</p></div></div>
+<div class="table-card"><table><thead><tr><th>Ticket #</th><th>Title</th><th>Requester</th><th>Priority</th><th>Status</th><th>Assigned To</th><th></th></tr></thead><tbody>
+{% for t in recent %}<tr><td class="mono">{{ t.ticket_number }}</td><td><strong>{{ t.title }}</strong><small class="sub">{{ t.category.name }}</small></td><td>{{ t.submitted_by.get_full_name|default:t.submitted_by.username }}</td><td><span class="badge {{ t.priority }}">{{ t.get_priority_display }}</span></td><td><span class="status {{ t.status }}">{{ t.get_status_display }}</span></td><td>{% if t.assigned_to %}{{ t.assigned_to.get_full_name|default:t.assigned_to.username }}{% else %}<span class="muted">Unassigned</span>{% endif %}</td><td><a class="btn small ghost" href="{% url 'ticket_detail' t.pk %}">Open</a></td></tr>
+{% empty %}<tr><td colspan="7" class="empty">No tickets found.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

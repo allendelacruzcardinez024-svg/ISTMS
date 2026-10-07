@@ -1,0 +1,25 @@
+{% extends 'tickets/base.html' %}{% block title %}Admin Dashboard{% endblock %}{% block page_label %}Administration{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">SYSTEM OVERVIEW</span><h1>Admin / Manager Dashboard</h1><p>Monitor ticket volume, service performance, and operational workload.</p></div><a class="btn primary" href="{% url 'reports' %}">View Reports →</a></div>
+<div class="stat-grid five">
+<div class="stat-card"><span class="stat-icon blue">◫</span><div><small>Total Tickets</small><strong>{{ stats.total }}</strong></div></div>
+<div class="stat-card"><span class="stat-icon amber">◷</span><div><small>Pending</small><strong>{{ stats.pending }}</strong></div></div>
+<div class="stat-card"><span class="stat-icon purple">↻</span><div><small>In Progress</small><strong>{{ stats.progress }}</strong></div></div>
+<div class="stat-card"><span class="stat-icon green">✓</span><div><small>Resolved</small><strong>{{ stats.resolved }}</strong></div></div>
+<div class="stat-card"><span class="stat-icon red">!</span><div><small>Active Queue</small><strong>{{ stats.overdue }}</strong></div></div>
+</div>
+<div class="two-col">
+<div class="panel"><div class="panel-head"><div><h2>Ticket Trend</h2><p>Last 7 days activity</p></div></div><div class="chart-wrap"><canvas id="trendChart"></canvas></div></div>
+<div class="panel"><div class="panel-head"><div><h2>Tickets by Category</h2><p>Current distribution</p></div></div><div class="chart-wrap"><canvas id="categoryChart"></canvas></div></div>
+</div>
+<div class="section-head"><div><h2>Recent Tickets</h2></div><a class="text-link" href="{% url 'all_tickets' %}">Manage tickets →</a></div>
+<div class="table-card"><table><thead><tr><th>Ticket #</th><th>Title</th><th>Priority</th><th>Status</th><th>Date</th></tr></thead><tbody>{% for t in recent %}<tr><td class="mono">{{t.ticket_number}}</td><td><strong>{{t.title}}</strong></td><td><span class="badge {{t.priority}}">{{t.get_priority_display}}</span></td><td><span class="status {{t.status}}">{{t.get_status_display}}</span></td><td>{{t.created_at|date:"M d, Y"}}</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}
+{% block scripts %}
+<script>
+const catLabels = [{% for c in category_stats %}"{{c.name}}",{% endfor %}];
+const catData = [{% for c in category_stats %}{{c.total}},{% endfor %}];
+new Chart(document.getElementById('categoryChart'), {type:'doughnut',data:{labels:catLabels,datasets:[{data:catData}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+new Chart(document.getElementById('trendChart'), {type:'bar',data:{labels:['Aug 27','Aug 28','Aug 29','Aug 30','Aug 31','Sep 1','Sep 2'],datasets:[{label:'Tickets',data:[8,12,18,10,15,17,14],borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:5}}}}});
+</script>
+{% endblock %}

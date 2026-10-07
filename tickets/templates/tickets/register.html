@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Create Account | ISTMS | Nexora</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'tickets/css/style.css' %}">
+<style>
+  .login-note {
+    color: #777;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .highlight-link {
+    color: #0056b3;
+    text-decoration: none;
+  }
+
+  .highlight-link:hover,
+  .highlight-link:focus {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body class="login-page">
+<div class="login-visual">
+  <div class="visual-overlay"></div>
+  <div class="visual-content">
+    <div class="login-logo"><div class="brand-mark big">N</div><div><b>NEXORA</b><small>BUSINESS SOLUTIONS CORPORATION</small></div></div>
+    <div class="visual-center">
+      <div class="eyebrow">NEXORA • DIGITAL OPERATIONS</div>
+      <h1>IT Support<br><em>without the chaos.</em></h1>
+      <p>Better support. A more connected workplace.</p>
+      <div class="login-pills"><span>● Centralized</span><span>● Trackable</span><span>● Accountable</span></div>
+    </div>
+  </div>
+</div>
+<div class="login-panel">
+  <div class="login-form-wrap">
+    <div class="mobile-brand">ISTMS</div>
+    <span class="eyebrow">CREATE AN ACCOUNT</span>
+    <h2>Sign up for ISTMS</h2>
+    <p class="muted">Create an account to start using the Nexora IT Support Management System.</p>
+    {% if messages %}{% for message in messages %}<div class="alert error">{{ message }}</div>{% endfor %}{% endif %}
+    <form method="post" class="form-stack">{% csrf_token %}
+      <label>Username<input name="username" type="text" placeholder="Enter your username" required></label>
+      <label>Email<input name="email" type="email" placeholder="Enter your email" required></label>
+      <label>Password<div class="password-wrap"><input name="password" id="password" type="password" placeholder="Enter your password" required></div></label>
+      <label>Confirm Password<div class="password-wrap"><input name="password2" id="password2" type="password" placeholder="Confirm your password" required></div></label>
+      <button class="btn primary full" type="submit">Create Account <span>→</span></button>
+    </form>
+<p class="login-note">Already have an account? <a class="highlight-link" href="{% url 'login' %}">Sign in</a>.</p>
+  </div>
+</div>
+<script src="{% static 'tickets/js/app.js' %}"></script>
+</body>
+</html>

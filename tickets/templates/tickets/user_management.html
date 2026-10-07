@@ -1,0 +1,5 @@
+{% extends 'tickets/base.html' %}{% block title %}User Management{% endblock %}{% block page_label %}User Management{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">ACCESS CONTROL</span><h1>System Users</h1><p>Manage users, roles, departments, and account status.</p></div><button class="btn primary" onclick="toast('For production, connect this action to a secure user creation form.')">＋ Add User</button></div>
+<div class="table-card"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Status</th><th>Actions</th></tr></thead><tbody>{% for u in users %}<tr><td><div class="person"><div class="avatar small">{{u.first_name|first|default:u.username|first|upper}}</div><strong>{{u.get_full_name|default:u.username}}</strong></div></td><td>{{u.email}}</td><td><span class="role-pill">{{u.profile.get_role_display}}</span></td><td>{{u.profile.department|default:"—"}}</td><td><span class="status resolved">Active</span></td><td><button class="icon-btn small" onclick="toast('User actions opened for {{u.username}}')">•••</button></td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

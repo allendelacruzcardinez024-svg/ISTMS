@@ -1,0 +1,13 @@
+{% extends 'tickets/base.html' %}{% block title %}Reports{% endblock %}{% block page_label %}Reports & Analytics{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">PERFORMANCE</span><h1>Reports</h1><p>Monitor ticket volume, status, priority, and support workload.</p></div><button class="btn primary" onclick="window.print()">Export / Print</button></div>
+<div class="stat-grid three"><div class="stat-card"><span class="stat-icon blue">◫</span><div><small>Total Tickets</small><strong>{{total}}</strong></div></div><div class="stat-card"><span class="stat-icon green">✓</span><div><small>Resolved</small><strong>{% for x in by_status %}{% if x.status == 'resolved' %}{{x.total}}{% endif %}{% endfor %}</strong></div></div><div class="stat-card"><span class="stat-icon amber">◷</span><div><small>Open / Active</small><strong>{{total}}</strong></div></div></div>
+<div class="two-col"><div class="panel"><div class="panel-head"><h2>Tickets by Status</h2></div><div class="chart-wrap"><canvas id="statusChart"></canvas></div></div><div class="panel"><div class="panel-head"><h2>Tickets by Priority</h2></div><div class="chart-wrap"><canvas id="priorityChart"></canvas></div></div></div>
+<div class="panel"><div class="panel-head"><h2>Category Breakdown</h2></div><table class="inner-table"><thead><tr><th>Category</th><th>Tickets</th><th>Share</th></tr></thead><tbody>{% for x in by_category %}<tr><td>{{x.category__name}}</td><td>{{x.total}}</td><td>{{x.total}} / {{total}}</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}
+{% block scripts %}<script>
+const sL=[{% for x in by_status %}"{{x.status|title}}",{% endfor %}], sD=[{% for x in by_status %}{{x.total}},{% endfor %}];
+const pL=[{% for x in by_priority %}"{{x.priority|title}}",{% endfor %}], pD=[{% for x in by_priority %}{{x.total}},{% endfor %}];
+new Chart(document.getElementById('statusChart'),{type:'doughnut',data:{labels:sL,datasets:[{data:sD}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+new Chart(document.getElementById('priorityChart'),{type:'bar',data:{labels:pL,datasets:[{label:'Tickets',data:pD,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+</script>{% endblock %}

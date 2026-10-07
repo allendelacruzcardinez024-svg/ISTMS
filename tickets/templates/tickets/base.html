@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}ISTMS{% endblock %} | Nexora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'tickets/css/style.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div><strong>NEXORA</strong><span>BUSINESS SOLUTIONS</span></div>
+      <b class="brand-divider">ISTMS</b>
+    </div>
+    <nav class="nav">
+      <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><span>⌂</span>Dashboard</a>
+      <a href="{% url 'submit_ticket' %}" class="{% if request.resolver_match.url_name == 'submit_ticket' %}active{% endif %}"><span>＋</span>Submit Ticket</a>
+      <a href="{% url 'my_tickets' %}" class="{% if request.resolver_match.url_name == 'my_tickets' %}active{% endif %}"><span>▣</span>My Tickets</a>
+      {% if request.user.profile.role != 'employee' %}
+      <a href="{% url 'all_tickets' %}" class="{% if request.resolver_match.url_name == 'all_tickets' %}active{% endif %}"><span>◫</span>Tickets</a>
+      {% endif %}
+      {% if request.user.profile.role != 'employee' %}
+      <a href="{% url 'reports' %}" class="{% if request.resolver_match.url_name == 'reports' %}active{% endif %}"><span>◔</span>Reports</a>
+      {% endif %}
+      <a href="{% url 'knowledge_base' %}" class="{% if request.resolver_match.url_name == 'knowledge_base' %}active{% endif %}"><span>?</span>Knowledge Base</a>
+      {% if request.user.profile.role == 'admin' or request.user.profile.role == 'manager' %}
+      <a href="{% url 'user_management' %}" class="{% if request.resolver_match.url_name == 'user_management' %}active{% endif %}"><span>♙</span>Users</a>
+      <a href="{% url 'settings_page' %}" class="{% if request.resolver_match.url_name == 'settings_page' %}active{% endif %}"><span>⚙</span>Settings</a>
+      {% endif %}
+      <a href="{% url 'profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}"><span>●</span>Profile</a>
+      <a href="{% url 'logout' %}"><span>↪</span>Logout</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="mini-status"></div>
+      <div><strong>System Online</strong><small>ISTMS v1.0 • Secure</small></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
+      <div class="top-title">{% block page_label %}IT Support Management{% endblock %}</div>
+      <div class="top-actions">
+        <button class="icon-btn" title="Notifications" onclick="toast('No new notifications')">♢<i></i></button>
+        <div class="user-menu">
+          <div class="avatar">{{ request.user.first_name|first|default:request.user.username|first|upper }}</div>
+          <div class="user-meta"><strong>{{ request.user.get_full_name|default:request.user.username }}</strong><span>{{ request.user.profile.get_role_display }}</span></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="content">
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}<button onclick="this.parentElement.remove()">×</button></div>
+        {% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </section>
+  </main>
+</div>
+<script src="{% static 'tickets/js/app.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

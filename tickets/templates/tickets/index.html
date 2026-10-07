@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ISTMS Login | Nexora</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'tickets/css/style.css' %}">
+<style>
+  .signup-note {
+    color: #777;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .highlight-link {
+    color: #0056b3;
+    text-decoration: none;
+  }
+
+  .highlight-link:hover,
+  .highlight-link:focus {
+    text-decoration: underline;
+  }
+
+  .password-wrap input {
+    padding-right: 64px;
+  }
+
+  .password-wrap .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: auto;
+    margin: 0;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #17212b;
+    cursor: pointer;
+  }
+
+  .password-wrap .password-toggle svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .password-wrap .password-toggle:hover,
+  .password-wrap .password-toggle:focus-visible {
+    background: #dceaff;
+    outline: 2px solid #1769aa;
+    outline-offset: 1px;
+  }
+</style>
+</head>
+<body class="login-page">
+<div class="login-visual">
+  <div class="visual-overlay"></div>
+  <div class="visual-content">
+    <div class="login-logo"><div class="brand-mark big">N</div><div><b>NEXORA</b><small>BUSINESS SOLUTIONS CORPORATION</small></div></div>
+    <div class="visual-center">
+      <div class="eyebrow">NEXORA • DIGITAL OPERATIONS</div>
+      <h1>IT Support<br><em>without the chaos.</em></h1>
+      <p>Better support. A more connected workplace.</p>
+      <div class="login-pills"><span>● Centralized</span><span>● Trackable</span><span>● Accountable</span></div>
+    </div>
+  </div>
+</div>
+<div class="login-panel">
+  <div class="login-form-wrap">
+    <div class="mobile-brand">ISTMS</div>
+    <span class="eyebrow">WELCOME BACK</span>
+    <h2>Sign in to your account</h2>
+    <p class="muted">Access the Nexora IT Support Management System.</p>
+    {% if messages %}{% for message in messages %}<div class="alert error">{{ message }}</div>{% endfor %}{% endif %}
+    <form method="post" class="form-stack">{% csrf_token %}
+      <label>Username or Email<input name="username" type="text" placeholder="Enter your username" required></label>
+      <label>Password<div class="password-wrap"><input name="password" id="password" type="password" placeholder="Enter your password" required><button class="password-toggle" id="password-toggle" type="button" aria-controls="password" aria-label="Show password" title="Show password" onclick="togglePassword()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div></label>
+      <div class="form-row between"><label class="check"><input type="checkbox"> Remember me</label><a href="#" onclick="toast('Please contact your administrator to reset your password.');return false">Forgot password?</a></div>
+      <button class="btn primary full" type="submit">Sign In <span>→</span></button>
+    </form>
+    <!-- <div class="demo-box"><strong>Demo accounts</strong><span>employee / password123</span><span>technician / password123</span><span>admin / password123</span></div> -->
+   <center> <p class="signup-note">Don't have an account? <a class="highlight-link" href="{% url 'register' %}">Create an account</a>.</p></center>
+</div>
+<script src="{% static 'tickets/js/app.js' %}"></script>
+</body>
+</html>

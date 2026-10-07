@@ -1,0 +1,70 @@
+{% extends 'tickets/base.html' %}{% block title %}Ticket {{ticket.ticket_number}}{% endblock %}{% block page_label %}Ticket Details{% endblock %}
+{% block content %}
+<div class="detail-top"><div><a class="back-link" href="{% if role == 'employee' %}{% url 'my_tickets' %}{% else %}{% url 'all_tickets' %}{% endif %}">← Back to Tickets</a><div class="ticket-title-row"><div><span class="eyebrow">{{ticket.ticket_number}}</span><h1>{{ticket.title}}</h1><p>Submitted {{ticket.created_at|date:"M d, Y • h:i A"}}</p></div><span class="status large {{ticket.status}}">{{ticket.get_status_display}}</span></div></div></div>
+<div class="detail-grid">
+<div>
+<div class="panel ticket-info"><div class="panel-head"><h2>Ticket Information</h2></div>
+<div class="info-grid"><div><small>Category</small><strong>{{ticket.category.name}}</strong></div><div><small>Priority</small><strong><span class="badge {{ticket.priority}}">{{ticket.get_priority_display}}</span></strong></div><div><small>Submitted By</small><strong>{{ticket.submitted_by.get_full_name|default:ticket.submitted_by.username}}</strong></div><div><small>Assigned To</small><strong>{{ticket.assigned_to.get_full_name|default:"Unassigned"}}</strong></div><div><small>Device / System</small><strong>{{ticket.device_system|default:"—"}}</strong></div><div><small>Location</small><strong>{{ticket.location|default:"—"}}</strong></div></div>
+<div class="description"><small>Description</small><p>{{ticket.description}}</p></div>
+{% if ticket.attachment %}
+<div class="attachment-box" style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid rgba(255,255,255,0.08);">
+  <small style="display:block;margin-bottom:0.35rem;color:#94a3b8;font-weight:600;">Attachment</small>
+  <a href="{{ ticket.attachment.url }}" target="_blank" class="btn small ghost" style="display:inline-flex;align-items:center;gap:0.4rem;">📎 View / Download Attachment</a>
+</div>
+{% endif %}
+</div>
+<div class="panel"><div class="panel-head"><div><h2>Updates</h2><p>Timeline of ticket activity.</p></div></div><div class="timeline">{% for u in updates %}<div class="timeline-item"><div class="timeline-dot"></div><div><strong>{{u.author.get_full_name|default:u.author.username}}</strong><span>{{u.created_at|date:"M d, Y • h:i A"}}</span><p>{{u.message}}</p></div></div>{% empty %}<p class="muted">No updates yet.</p>{% endfor %}</div>
+<form method="post" action="{% url 'ticket_update' ticket.pk %}" class="update-form">{% csrf_token %}{{update_form.message}}<button class="btn primary" type="submit">Post Update</button></form>
+</div>
+</div>
+<div>
+{% if role != 'employee' %}
+<div class="panel"><div class="panel-head"><h2>Assignment & Status</h2></div>
+<form method="post" action="{% url 'assign_ticket' ticket.pk %}" class="form-stack">
+{% csrf_token %}
+<label>Assign Technician
+<select name="assigned_to" class="form-control">
+<option value="">Unassigned</option>
+{% for u in technicians %}
+<option value="{{u.id}}" {% if ticket.assigned_to_id == u.id %}selected{% endif %}>{{u.get_full_name|default:u.username}}</option>
+{% endfor %}
+</select>
+</label>
+<label>Status
+<select name="status" class="form-control">
+{% for value,label in ticket.STATUSES %}
+<option value="{{value}}" {% if ticket.status == value %}selected{% endif %}>{{label}}</option>
+{% endfor %}
+</select>
+</label>
+<label>Resolution Notes
+<textarea name="resolution" class="form-control" rows="3" placeholder="Explain resolution or notes...">{{ ticket.resolution }}</textarea>
+</label>
+<button class="btn primary full" type="submit">Save Changes</button>
+</form>
+</div>
+{% endif %}
+<div class="panel"><div class="panel-head"><h2>Resolution</h2></div>{% if ticket.resolution %}<p>{{ticket.resolution}}</p>{% else %}<p class="muted">Resolution will appear here once the issue is resolved.</p>{% endif %}</div>
+{% if ticket.status == 'resolved' or ticket.status == 'closed' %}
+<div class="panel">
+<div class="panel-head"><h2>Service Feedback</h2></div>
+{% if ticket.feedback %}
+<div class="feedback-box">
+<div style="font-size:1.1rem;font-weight:700;color:#f59e0b;margin-bottom:0.35rem;">Rating: {{ticket.feedback.rating}} / 5 ★</div>
+{% if ticket.feedback.comment %}<p class="muted" style="margin:0;">"{{ticket.feedback.comment}}"</p>{% endif %}
+</div>
+{% elif ticket.submitted_by == request.user %}
+<form method="post" action="{% url 'ticket_feedback' ticket.pk %}" class="form-stack">
+{% csrf_token %}
+<label>Rating {{feedback_form.rating}}</label>
+<label>Comments {{feedback_form.comment}}</label>
+<button class="btn primary full" type="submit">Submit Feedback</button>
+</form>
+{% else %}
+<p class="muted">Awaiting feedback from requester.</p>
+{% endif %}
+</div>
+{% endif %}
+</div>
+</div>
+{% endblock %}
