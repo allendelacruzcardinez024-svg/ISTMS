@@ -3,95 +3,51 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ISTMS Login | Nexora</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'tickets/css/style.css' %}">
+<meta name="theme-color" content="#f4f8ff">
+<title>Sign in | ISTMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  .signup-note {
-    color: #777;
-    font-size: 16px;
-    line-height: 1.5;
-  }
-
-  .highlight-link {
-    color: #0056b3;
-    text-decoration: none;
-  }
-
-  .highlight-link:hover,
-  .highlight-link:focus {
-    text-decoration: underline;
-  }
-
-  .password-wrap input {
-    padding-right: 64px;
-  }
-
-  .password-wrap .password-toggle {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    width: auto;
-    margin: 0;
-    display: grid;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border: 0;
-    border-radius: 5px;
-    background: transparent;
-    color: #17212b;
-    cursor: pointer;
-  }
-
-  .password-wrap .password-toggle svg {
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .password-wrap .password-toggle:hover,
-  .password-wrap .password-toggle:focus-visible {
-    background: #dceaff;
-    outline: 2px solid #1769aa;
-    outline-offset: 1px;
-  }
+  :root{font-family:'DM Sans',sans-serif;color:#172b4d;background:#f4f8ff;font-synthesis:none}
+  *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 14% 4%,#e5efff 0,transparent 40%),#f6f9fe}
+  .shell{min-height:100vh;max-width:1440px;margin:auto;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(420px,.92fr);padding:32px 5.4%;gap:7%}
+  .story{position:relative;overflow:hidden;border-radius:28px;background:linear-gradient(145deg,#0b2f69,#1259aa 58%,#3286e8);color:white;min-height:calc(100vh - 64px);padding:44px 48px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 22px 70px #144b891c}
+  .story:before,.story:after{content:"";position:absolute;border:1px solid #ffffff1b;border-radius:50%;width:520px;height:520px;right:-230px;top:-205px}.story:after{width:390px;height:390px;right:-160px;top:-140px}
+  .brand{display:flex;align-items:center;gap:13px;position:relative;z-index:1}.brand-icon{width:42px;height:42px;border-radius:13px;background:#ffffff20;display:grid;place-items:center;font-size:22px;font-weight:800}.brand-name{font:800 17px Manrope,sans-serif;letter-spacing:.12em}.brand-caption{display:block;font-size:9px;letter-spacing:.17em;opacity:.72;margin-top:3px}
+  .story-content{max-width:520px;position:relative;z-index:1;padding:60px 0}.eyebrow{font-size:11px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;color:#c9e1ff}.story h1{font:700 clamp(38px,4.2vw,59px)/1.12 Manrope,sans-serif;letter-spacing:-.045em;margin:22px 0 18px}.story h1 span{color:#9fd0ff}.story p{font-size:16px;line-height:1.75;color:#e2eeff;max-width:430px;margin:0}.features{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}.features span{border:1px solid #ffffff35;background:#ffffff12;border-radius:99px;padding:9px 13px;font-size:12px;color:#f0f7ff}.story-foot{color:#c9dfff;font-size:12px;position:relative;z-index:1}
+  .form-area{display:flex;align-items:center;justify-content:center;padding:40px 0}.card{width:min(100%,440px)}.mobile-brand{display:none}.kicker{font-size:11px;font-weight:700;letter-spacing:.15em;color:#3576c5;text-transform:uppercase}.card h2{font:700 32px/1.2 Manrope,sans-serif;letter-spacing:-.035em;margin:12px 0 8px;color:#142746}.intro{color:#74839b;font-size:14px;line-height:1.6;margin:0 0 28px}
+  .role-switch{display:grid;grid-template-columns:1fr 1fr;padding:5px;background:#eaf1fb;border-radius:13px;margin-bottom:26px;gap:4px}.role-switch button{border:0;background:transparent;padding:12px 10px;border-radius:10px;color:#65758e;font:600 13px 'DM Sans',sans-serif;cursor:pointer;transition:.18s}.role-switch button[aria-pressed="true"]{background:#fff;color:#155bb3;box-shadow:0 2px 8px #17375e14}
+  .alert{border-radius:10px;padding:12px 14px;margin:0 0 16px;font-size:13px}.alert.error{background:#fff0f0;color:#a73434;border:1px solid #f8d7d7}.form-stack{display:grid;gap:17px}.field{display:grid;gap:8px;color:#34445f;font-size:13px;font-weight:600}.field input{width:100%;height:49px;border:1px solid #dce4ef;border-radius:10px;background:#fff;padding:0 14px;font:400 14px 'DM Sans',sans-serif;color:#20334f;outline:none;transition:.18s}.field input:focus{border-color:#4388df;box-shadow:0 0 0 3px #4388df1c}.field input::placeholder{color:#a1adbd}.pass-wrap{position:relative}.pass-wrap input{padding-right:52px}.password-toggle{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:7px;background:transparent;color:#73839a;display:grid;place-items:center;cursor:pointer}.password-toggle:hover{background:#eef4fc}.password-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .options{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;margin-top:-1px}.remember{display:flex;align-items:center;gap:8px;color:#66758c;font-weight:500}.remember input{width:15px;height:15px;accent-color:#1767c2;margin:0}.options a,.signup a{color:#1767c2;text-decoration:none;font-weight:600}.options a:hover,.signup a:hover{text-decoration:underline}.submit{height:50px;border:0;border-radius:10px;background:linear-gradient(100deg,#1763bd,#2f82df);color:#fff;font:700 14px 'DM Sans',sans-serif;box-shadow:0 8px 18px #1763bd30;cursor:pointer;transition:transform .15s,box-shadow .15s}.submit:hover{transform:translateY(-1px);box-shadow:0 10px 22px #1763bd40}.submit span{font-size:17px;margin-left:7px}.signup{font-size:13px;color:#76849a;text-align:center;margin:23px 0 0}.secure{display:flex;align-items:center;justify-content:center;gap:7px;color:#9aa7b8;font-size:11px;margin-top:28px}.secure svg{width:14px;height:14px;stroke:#7e9bbf;fill:none;stroke-width:1.8}
+  @media(max-width:900px){.shell{grid-template-columns:1fr;max-width:560px;padding:22px}.story{display:none}.form-area{min-height:calc(100vh - 44px);padding:20px 0}.mobile-brand{display:flex;align-items:center;gap:10px;margin-bottom:46px;color:#153966;font:800 15px Manrope,sans-serif;letter-spacing:.1em}.mobile-brand i{font-style:normal;width:36px;height:36px;border-radius:11px;background:#dcecff;color:#1763bd;display:grid;place-items:center;font-size:19px}.card h2{font-size:29px}}
+  @media(max-width:420px){.shell{padding:16px}.mobile-brand{margin-bottom:34px}.card h2{font-size:27px}.options{font-size:11px}}
 </style>
 </head>
-<body class="login-page">
-<div class="login-visual">
-  <div class="visual-overlay"></div>
-  <div class="visual-content">
-    <div class="login-logo"><div class="brand-mark big">N</div><div><b>NEXORA</b><small>BUSINESS SOLUTIONS CORPORATION</small></div></div>
-    <div class="visual-center">
-      <div class="eyebrow">NEXORA • DIGITAL OPERATIONS</div>
-      <h1>IT Support<br><em>without the chaos.</em></h1>
-      <p>Better support. A more connected workplace.</p>
-      <div class="login-pills"><span>● Centralized</span><span>● Trackable</span><span>● Accountable</span></div>
-    </div>
-  </div>
-</div>
-<div class="login-panel">
-  <div class="login-form-wrap">
-    <div class="mobile-brand">ISTMS</div>
-    <span class="eyebrow">WELCOME BACK</span>
-    <h2>Sign in to your account</h2>
-    <p class="muted">Access the Nexora IT Support Management System.</p>
-    {% if messages %}{% for message in messages %}<div class="alert error">{{ message }}</div>{% endfor %}{% endif %}
-    <form method="post" class="form-stack">{% csrf_token %}
-      <label>Username or Email<input name="username" type="text" placeholder="Enter your username" required></label>
-      <label>Password<div class="password-wrap"><input name="password" id="password" type="password" placeholder="Enter your password" required><button class="password-toggle" id="password-toggle" type="button" aria-controls="password" aria-label="Show password" title="Show password" onclick="togglePassword()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div></label>
-      <div class="form-row between"><label class="check"><input type="checkbox"> Remember me</label><a href="#" onclick="toast('Please contact your administrator to reset your password.');return false">Forgot password?</a></div>
-      <button class="btn primary full" type="submit">Sign In <span>→</span></button>
+<body>
+<main class="shell">
+  <section class="story" aria-label="About ISTMS">
+    <div class="brand"><div class="brand-icon">N</div><div><span class="brand-name">NEXORA</span><small class="brand-caption">BUSINESS SOLUTIONS</small></div></div>
+    <div class="story-content"><span class="eyebrow">NEXORA · DIGITAL OPERATIONS</span><h1>IT support,<br><span>made simpler.</span></h1><p>One place to get help, follow progress, and keep your workplace moving.</p><div class="features"><span>●&nbsp; Centralized</span><span>●&nbsp; Trackable</span><span>●&nbsp; Accountable</span></div></div>
+    <div class="story-foot">ISTMS · IT Support Management System</div>
+  </section>
+  <section class="form-area"><div class="card">
+    <div class="mobile-brand"><i>N</i> NEXORA</div>
+    <span class="kicker">Welcome back</span><h2 id="form-title">Sign in to your account</h2><p class="intro" id="form-intro">Access your support tickets and account.</p>
+    <div class="role-switch" role="group" aria-label="Choose account type"><button type="button" id="user-tab" aria-pressed="{% if selected_role == 'admin' %}false{% else %}true{% endif %}" onclick="selectRole('user')">Login as User</button><button type="button" id="admin-tab" aria-pressed="{% if selected_role == 'admin' %}true{% else %}false{% endif %}" onclick="selectRole('admin')">Login as Admin</button></div>
+    {% if messages %}{% for message in messages %}<div class="alert error" role="alert">{{ message }}</div>{% endfor %}{% endif %}
+    <form method="post" class="form-stack" autocomplete="on">{% csrf_token %}<input type="hidden" name="account_type" id="account-type" value="{{ selected_role|default:'user' }}">
+      <label class="field"><span id="username-label">Username or Email Address</span><input aria-label="Username or Email Address" name="username" type="text" placeholder="Enter your username or email" value="{{ request.POST.username|default:'' }}" autocomplete="username" required></label>
+      <label class="field"><span id="password-label">Password</span><div class="pass-wrap"><input name="password" id="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button class="password-toggle" id="password-toggle" type="button" aria-controls="password" aria-label="Show password" title="Show password" onclick="togglePassword()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div></label>
+      <div class="options"><label class="remember"><input type="checkbox" name="remember_me" value="1" {% if request.POST.remember_me %}checked{% endif %}> Remember me</label><a href="mailto:support@company.com?subject=Password%20Reset%20Request">Forgot password?</a></div>
+      <button class="submit" type="submit" id="submit-label">Sign In <span aria-hidden="true">→</span></button>
     </form>
-    <!-- <div class="demo-box"><strong>Demo accounts</strong><span>employee / password123</span><span>technician / password123</span><span>admin / password123</span></div> -->
-   <center> <p class="signup-note">Don't have an account? <a class="highlight-link" href="{% url 'register' %}">Create an account</a>.</p></center>
-</div>
-<script src="{% static 'tickets/js/app.js' %}"></script>
-</body>
-</html>
+    <p class="signup" id="signup-note">New to the system? <a href="{% url 'register' %}">Create an account</a></p>
+    <div class="secure"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg> Secure, encrypted sign in</div>
+  </div></section>
+</main>
+<script>
+function selectRole(role){const admin=role==='admin';document.getElementById('account-type').value=role;document.getElementById('user-tab').setAttribute('aria-pressed',String(!admin));document.getElementById('admin-tab').setAttribute('aria-pressed',String(admin));document.getElementById('username-label').textContent=admin?'Admin Username or Email':'Username or Email Address';document.querySelector('[name="username"]').setAttribute('aria-label',admin?'Admin Username or Email':'Username or Email Address');document.getElementById('password-label').textContent=admin?'Admin Password':'Password';document.getElementById('submit-label').innerHTML=(admin?'Admin Sign In':'Sign In')+' <span aria-hidden="true">→</span>';document.getElementById('form-intro').textContent=admin?'Access administrative tools and system management.':'Access your support tickets and account.';document.getElementById('signup-note').style.display=admin?'none':'';}
+function togglePassword(){const p=document.getElementById('password'),b=document.getElementById('password-toggle'),shown=p.type==='password';p.type=shown?'text':'password';b.setAttribute('aria-label',shown?'Hide password':'Show password');b.title=shown?'Hide password':'Show password';}
+selectRole(document.getElementById('account-type').value);
+</script>
+</body></html>

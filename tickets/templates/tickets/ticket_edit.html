@@ -1,0 +1,26 @@
+{% extends 'tickets/base.html' %}{% block title %}Edit Ticket {{ ticket.ticket_number }}{% endblock %}{% block page_label %}Edit Ticket{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">UPDATE REQUEST</span><h1>Edit Ticket: {{ ticket.ticket_number }}</h1><p>Adjust the details for this support request.</p></div></div>
+
+<form method="post" enctype="multipart/form-data" class="form-card">{% csrf_token %}
+  {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="form-grid">
+    {% if management_fields %}<div><label>Requester {{ form.submitted_by }}</label>{{ form.submitted_by.errors }}</div>{% endif %}
+    <div><label>Category {{ form.category }}</label>{{ form.category.errors }}</div>
+    <div><label>Specific Issue</label><div data-issue-choice>{{ form.issue_type }}</div>{{ form.issue_type.errors }}<div data-issue-other hidden><label for="{{ form.other_issue.id_for_label }}">Your Issue</label>{{ form.other_issue }}{{ form.other_issue.errors }}</div></div>
+    <div><label>Priority {{ form.priority }}</label>{{ form.priority.errors }}</div>
+    {% if management_fields %}
+      <div><label>Status {{ form.status }}</label>{{ form.status.errors }}</div>
+      <div><label>Assigned To {{ form.assigned_to }}</label>{{ form.assigned_to.errors }}</div>
+      <div><label>Date {{ form.ticket_date }}</label>{{ form.ticket_date.errors }}</div>
+    {% endif %}
+    <div class="span-2"><label>Description {{ form.description }}</label><small class="hint">Keep the details accurate so the support team can act quickly.</small></div>
+    {% if management_fields %}<div class="span-2"><label>Resolution Notes {{ form.resolution }}</label>{{ form.resolution.errors }}</div>{% endif %}
+    <div class="span-2"><label>Attachment (optional) {{ form.attachment }}</label></div>
+  </div>
+  <div class="form-actions">
+    <a href="{% url 'ticket_detail' ticket.pk %}" class="btn ghost">Cancel</a>
+    <button class="btn primary" type="submit">Save Changes</button>
+  </div>
+</form>
+{% endblock %}

@@ -37,6 +37,7 @@ TEMPLATES = [{
             "django.template.context_processors.request",
             "django.contrib.auth.context_processors.auth",
             "django.contrib.messages.context_processors.messages",
+            "tickets.context_processors.notification_context",
         ],
     },
 }]

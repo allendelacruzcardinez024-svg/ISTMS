@@ -22,6 +22,50 @@
   .highlight-link:focus {
     text-decoration: underline;
   }
+
+  .password-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  .password-wrap input {
+    box-sizing: border-box;
+    padding-right: 52px;
+  }
+
+  .password-wrap .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #17212b;
+    cursor: pointer;
+    place-items: center;
+    transform: translateY(-50%);
+  }
+
+  .password-wrap .password-toggle svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+  }
+
+  .password-wrap .password-toggle:hover,
+  .password-wrap .password-toggle:focus-visible {
+    background: #dceaff;
+    outline: 2px solid #1769aa;
+    outline-offset: 1px;
+  }
 </style>
 </head>
 <body class="login-page">
@@ -46,14 +90,15 @@
     {% if messages %}{% for message in messages %}<div class="alert error">{{ message }}</div>{% endfor %}{% endif %}
     <form method="post" class="form-stack">{% csrf_token %}
       <label>Username<input name="username" type="text" placeholder="Enter your username" required></label>
-      <label>Email<input name="email" type="email" placeholder="Enter your email" required></label>
-      <label>Password<div class="password-wrap"><input name="password" id="password" type="password" placeholder="Enter your password" required></div></label>
-      <label>Confirm Password<div class="password-wrap"><input name="password2" id="password2" type="password" placeholder="Confirm your password" required></div></label>
+      <label>Email (optional)<input name="email" type="email" placeholder="Enter your email"></label>
+      {% if is_admin_action %}<label>Account type<select name="role"><option value="user">User</option><option value="admin">Admin</option></select></label>{% endif %}
+      <label>Password<div class="password-wrap"><input name="password" id="password" type="password" placeholder="Enter your password" required><button class="password-toggle" id="password-toggle" type="button" aria-controls="password" aria-label="Show password" title="Show password" onclick="togglePassword('password', 'password-toggle')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div></label>
+      <label>Confirm Password<div class="password-wrap"><input name="password2" id="password2" type="password" placeholder="Confirm your password" required><button class="password-toggle" id="password2-toggle" type="button" aria-controls="password2" aria-label="Show password" title="Show password" onclick="togglePassword('password2', 'password2-toggle')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div></label>
       <button class="btn primary full" type="submit">Create Account <span>→</span></button>
     </form>
 <p class="login-note">Already have an account? <a class="highlight-link" href="{% url 'login' %}">Sign in</a>.</p>
   </div>
 </div>
-<script src="{% static 'tickets/js/app.js' %}"></script>
+<script src="{% static 'tickets/js/app.js' %}?v=4"></script>
 </body>
 </html>

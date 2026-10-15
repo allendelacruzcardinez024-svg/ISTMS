@@ -1,3 +1,52 @@
 {% extends 'tickets/base.html' %}{% block title %}Knowledge Base{% endblock %}{% block page_label %}Knowledge Base{% endblock %}
-{% block content %}<div class="page-heading"><div><span class="eyebrow">SELF SERVICE</span><h1>Knowledge Base</h1><p>Quick references for common IT concerns.</p></div></div>
-<div class="article-grid">{% for title,desc in articles %}<div class="article-card"><div class="article-icon">✦</div><h3>{{title}}</h3><p>{{desc}}</p><a href="#" onclick="toast('Knowledge article preview');return false">Read guide →</a></div>{% endfor %}</div>{% endblock %}
+{% block content %}
+<div class="page-heading">
+	<div>
+		<span class="eyebrow">SELF SERVICE</span>
+		<h1>Knowledge Base</h1>
+		<p>Quick references for common IT concerns.</p>
+	</div>
+</div>
+
+<div class="article-grid">
+	{% for article in articles %}
+		<button class="article-card article-trigger" type="button" data-slide-index="{{ forloop.counter0 }}" aria-haspopup="dialog">
+			<div class="article-icon">✦</div>
+			<h3>{{ article.title }}</h3>
+			<p>{{ article.summary }}</p>
+		</button>
+	{% endfor %}
+</div>
+
+<dialog class="guide-dialog" id="guideDialog" aria-labelledby="guideTitle">
+	<div class="guide-dialog-inner">
+		<div class="guide-dialog-top">
+			<div>
+				<span class="eyebrow" id="guideProgress"></span>
+				<h2 id="guideTitle"></h2>
+			</div>
+			<button class="guide-close" type="button" id="guideClose" aria-label="Close guide" title="Close guide">&times;</button>
+		</div>
+
+		{% for article in articles %}
+			<section class="guide-slide" data-slide-index="{{ forloop.counter0 }}" data-title="{{ article.title }}" hidden>
+				<h3>Example steps</h3>
+				<ol>
+					{% for step in article.steps %}
+						<li>{{ step }}</li>
+					{% endfor %}
+				</ol>
+				<div class="guide-response">
+					<strong>Suggested response</strong>
+					<p>{{ article.response }}</p>
+				</div>
+			</section>
+		{% endfor %}
+
+		<div class="guide-controls">
+			<button class="btn ghost" type="button" id="guidePrevious">Previous</button>
+			<button class="btn primary" type="button" id="guideNext">Next</button>
+		</div>
+	</div>
+</dialog>
+{% endblock %}

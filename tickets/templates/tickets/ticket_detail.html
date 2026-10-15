@@ -1,10 +1,15 @@
 {% extends 'tickets/base.html' %}{% block title %}Ticket {{ticket.ticket_number}}{% endblock %}{% block page_label %}Ticket Details{% endblock %}
 {% block content %}
-<div class="detail-top"><div><a class="back-link" href="{% if role == 'employee' %}{% url 'my_tickets' %}{% else %}{% url 'all_tickets' %}{% endif %}">← Back to Tickets</a><div class="ticket-title-row"><div><span class="eyebrow">{{ticket.ticket_number}}</span><h1>{{ticket.title}}</h1><p>Submitted {{ticket.created_at|date:"M d, Y • h:i A"}}</p></div><span class="status large {{ticket.status}}">{{ticket.get_status_display}}</span></div></div></div>
+<div class="detail-top"><div><a class="back-link" href="{% if role == 'user' %}{% url 'my_tickets' %}{% else %}{% url 'all_tickets' %}{% endif %}">← Back to Tickets</a><div class="ticket-title-row"><div><span class="eyebrow">{{ticket.ticket_number}}</span><h1>{{ticket.title}}</h1><p>Submitted {{ticket.created_at|date:"M d, Y • h:i A"}}</p></div><span class="status large {{ticket.status}}">{{ticket.get_status_display}}</span></div></div></div>
+<div class="detail-actions" style="display:flex;justify-content:flex-end;gap:0.75rem;margin:1rem 0 1.5rem;">
+  {% if role == 'admin' or ticket.status == 'pending' or ticket.status == 'assigned' or ticket.status == 'in_progress' or ticket.status == 'resolved' or ticket.status == 'closed' %}
+    <a class="btn small primary" href="{% url 'ticket_edit' ticket.pk %}">Edit</a>
+  {% endif %}
+</div>
 <div class="detail-grid">
 <div>
 <div class="panel ticket-info"><div class="panel-head"><h2>Ticket Information</h2></div>
-<div class="info-grid"><div><small>Category</small><strong>{{ticket.category.name}}</strong></div><div><small>Priority</small><strong><span class="badge {{ticket.priority}}">{{ticket.get_priority_display}}</span></strong></div><div><small>Submitted By</small><strong>{{ticket.submitted_by.get_full_name|default:ticket.submitted_by.username}}</strong></div><div><small>Assigned To</small><strong>{{ticket.assigned_to.get_full_name|default:"Unassigned"}}</strong></div><div><small>Device / System</small><strong>{{ticket.device_system|default:"—"}}</strong></div><div><small>Location</small><strong>{{ticket.location|default:"—"}}</strong></div></div>
+<div class="info-grid"><div><small>Category</small><strong>{{ticket.category.name}}</strong></div><div><small>Specific Issue</small><strong>{{ticket.issue_type|default:"—"}}</strong></div><div><small>Priority</small><strong><span class="badge {{ticket.priority}}">{{ticket.get_priority_display}}</span></strong></div><div><small>Submitted By</small><strong>{{ticket.submitted_by.get_full_name|default:ticket.submitted_by.username}}</strong></div><div><small>Assigned To</small><strong>{{ticket.assigned_to.get_full_name|default:"Unassigned"}}</strong></div></div>
 <div class="description"><small>Description</small><p>{{ticket.description}}</p></div>
 {% if ticket.attachment %}
 <div class="attachment-box" style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid rgba(255,255,255,0.08);">
@@ -18,11 +23,39 @@
 </div>
 </div>
 <div>
-{% if role != 'employee' %}
+{% if role == 'user' %}
+<div class="panel">
+  <div class="panel-head"><h2>Your Ticket Actions</h2></div>
+  {% if ticket.status == 'pending' or ticket.status == 'in_progress' %}
+  <form method="post" action="{% url 'ticket_employee_action' ticket.pk %}" class="form-stack">
+    {% csrf_token %}<input type="hidden" name="action" value="acknowledge">
+    <p class="muted">Confirm that you have seen the current ticket status.</p>
+    <button class="btn primary full" type="submit">Acknowledge {{ ticket.get_status_display }}</button>
+  </form>
+  {% elif ticket.status == 'resolved' %}
+  <p class="muted">Review the resolution, then accept it or request more work from IT.</p>
+  <form method="post" action="{% url 'ticket_employee_action' ticket.pk %}" class="form-stack">
+    {% csrf_token %}<input type="hidden" name="action" value="accept">
+    <button class="btn primary full" type="submit">Accept Resolution &amp; Close</button>
+  </form>
+  <form method="post" action="{% url 'ticket_employee_action' ticket.pk %}" class="form-stack">
+    {% csrf_token %}<input type="hidden" name="action" value="reopen">
+    <label>Why does this issue need more work?
+      <textarea name="reason" class="form-control" rows="3" required maxlength="1000" placeholder="Describe what is still not working..."></textarea>
+    </label>
+    <button class="btn ghost full" type="submit">Request Reopen</button>
+  </form>
+  {% elif ticket.status == 'closed' %}
+  <p class="muted">You accepted the resolution and closed this ticket.</p>
+  {% endif %}
+</div>
+{% endif %}
+{% if role == 'admin' %}
 <div class="panel"><div class="panel-head"><h2>Assignment & Status</h2></div>
 <form method="post" action="{% url 'assign_ticket' ticket.pk %}" class="form-stack">
 {% csrf_token %}
-<label>Assign Technician
+{% if role == 'admin' %}
+<label>Assign User
 <select name="assigned_to" class="form-control">
 <option value="">Unassigned</option>
 {% for u in technicians %}
@@ -30,6 +63,7 @@
 {% endfor %}
 </select>
 </label>
+{% endif %}
 <label>Status
 <select name="status" class="form-control">
 {% for value,label in ticket.STATUSES %}
@@ -39,6 +73,7 @@
 </label>
 <label>Resolution Notes
 <textarea name="resolution" class="form-control" rows="3" placeholder="Explain resolution or notes...">{{ ticket.resolution }}</textarea>
+<small class="hint">Required when resolving or closing this ticket.</small>
 </label>
 <button class="btn primary full" type="submit">Save Changes</button>
 </form>
@@ -50,7 +85,7 @@
 <div class="panel-head"><h2>Service Feedback</h2></div>
 {% if ticket.feedback %}
 <div class="feedback-box">
-<div style="font-size:1.1rem;font-weight:700;color:#f59e0b;margin-bottom:0.35rem;">Rating: {{ticket.feedback.rating}} / 5 ★</div>
+<div style="font-size:1.1rem;font-weight:700;color:#f59e0b;margin-bottom:0.35rem;">Rating: {% for star in "12345" %}{% if forloop.counter <= ticket.feedback.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
 {% if ticket.feedback.comment %}<p class="muted" style="margin:0;">"{{ticket.feedback.comment}}"</p>{% endif %}
 </div>
 {% elif ticket.submitted_by == request.user %}

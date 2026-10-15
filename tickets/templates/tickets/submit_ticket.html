@@ -3,10 +3,9 @@
 <div class="page-heading"><div><span class="eyebrow">NEW REQUEST</span><h1>Submit IT Support Ticket</h1><p>Report your IT concern and our support team will assist you.</p></div></div>
 <form method="post" enctype="multipart/form-data" class="form-card">{% csrf_token %}
 <div class="form-grid">
-<div><label>Category {{ form.category }}</label></div><div><label>Priority {{ form.priority }}</label></div>
-<div class="span-2"><label>Title {{ form.title }}</label></div>
+<div><label>Category {{ form.category }}</label>{{ form.category.errors }}</div>
+<div><label>Specific Issue</label><div data-issue-choice>{{ form.issue_type }}</div>{{ form.issue_type.errors }}<div data-issue-other hidden><label for="{{ form.other_issue.id_for_label }}">Your Issue</label>{{ form.other_issue }}{{ form.other_issue.errors }}</div></div>
 <div class="span-2"><label>Description {{ form.description }}</label><small class="hint">Include error messages, what you were doing, and when the issue started.</small></div>
-<div><label>Affected Device / System {{ form.device_system }}</label></div><div><label>Location {{ form.location }}</label></div>
 <div class="span-2"><label>Attachment (optional) {{ form.attachment }}</label></div>
 </div>
 <div class="form-actions"><a href="{% url 'dashboard' %}" class="btn ghost">Cancel</a><button class="btn primary" type="submit">➤ Submit Ticket</button></div>

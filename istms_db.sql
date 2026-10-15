@@ -369,7 +369,7 @@ CREATE TABLE IF NOT EXISTS `tickets_profile` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `role` varchar(20) NOT NULL,
   `department` varchar(100) NOT NULL,
-  `employee_id` varchar(50) NOT NULL,
+  `user_identifier` varchar(50) NOT NULL,
   `avatar_initials` varchar(5) NOT NULL,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
@@ -380,7 +380,7 @@ CREATE TABLE IF NOT EXISTS `tickets_profile` (
 -- Dumping data for table `tickets_profile`
 --
 
-INSERT INTO `tickets_profile` (`id`, `role`, `department`, `employee_id`, `avatar_initials`, `user_id`) VALUES
+INSERT INTO `tickets_profile` (`id`, `role`, `department`, `user_identifier`, `avatar_initials`, `user_id`) VALUES
 (2, 'admin', 'IT', 'ADM-001', 'MS', 2),
 (5, 'technician', 'IT Support', 'TECH-001', 'RS', 5),
 (4, 'employee', 'Operations', 'EMP-001', 'JD', 4),
@@ -464,6 +464,4 @@ INSERT INTO `tickets_ticketupdate` (`id`, `message`, `created_at`, `author_id`, 
 (10, 'Ticket assignment/status updated by Maria Santos.', '2026-09-28 14:09:55.714334', 2, 7);
 COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+

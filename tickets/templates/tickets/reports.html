@@ -1,13 +1,69 @@
-{% extends 'tickets/base.html' %}{% block title %}Reports{% endblock %}{% block page_label %}Reports & Analytics{% endblock %}
+{% extends 'tickets/base.html' %}
+{% block title %}Reports{% endblock %}
+{% block page_label %}Reports & Analytics{% endblock %}
 {% block content %}
-<div class="page-heading"><div><span class="eyebrow">PERFORMANCE</span><h1>Reports</h1><p>Monitor ticket volume, status, priority, and support workload.</p></div><button class="btn primary" onclick="window.print()">Export / Print</button></div>
-<div class="stat-grid three"><div class="stat-card"><span class="stat-icon blue">◫</span><div><small>Total Tickets</small><strong>{{total}}</strong></div></div><div class="stat-card"><span class="stat-icon green">✓</span><div><small>Resolved</small><strong>{% for x in by_status %}{% if x.status == 'resolved' %}{{x.total}}{% endif %}{% endfor %}</strong></div></div><div class="stat-card"><span class="stat-icon amber">◷</span><div><small>Open / Active</small><strong>{{total}}</strong></div></div></div>
-<div class="two-col"><div class="panel"><div class="panel-head"><h2>Tickets by Status</h2></div><div class="chart-wrap"><canvas id="statusChart"></canvas></div></div><div class="panel"><div class="panel-head"><h2>Tickets by Priority</h2></div><div class="chart-wrap"><canvas id="priorityChart"></canvas></div></div></div>
-<div class="panel"><div class="panel-head"><h2>Category Breakdown</h2></div><table class="inner-table"><thead><tr><th>Category</th><th>Tickets</th><th>Share</th></tr></thead><tbody>{% for x in by_category %}<tr><td>{{x.category__name}}</td><td>{{x.total}}</td><td>{{x.total}} / {{total}}</td></tr>{% endfor %}</tbody></table></div>
+<div class="page-heading">
+  <div><span class="eyebrow">PERFORMANCE</span><h1>Reports</h1><p>Monitor ticket status, response times, and technician workload.</p></div>
+  <button class="btn primary" type="button" onclick="window.print()">Export / Print</button>
+</div>
+
+<div class="stat-grid">
+  <a class="stat-card" href="{% url 'all_tickets' %}"><span class="stat-icon blue">◫</span><div><small>Total Tickets</small><strong>{{ total }}</strong></div></a>
+  <a class="stat-card" href="{% url 'all_tickets' %}?status=active"><span class="stat-icon amber">◷</span><div><small>Open / Active</small><strong>{{ active_total }}</strong></div></a>
+  <a class="stat-card" href="{% url 'all_tickets' %}?status=resolved"><span class="stat-icon green">✓</span><div><small>Resolved / Closed</small><strong>{{ resolved_total }}</strong></div></a>
+  <a class="stat-card" href="{% url 'all_tickets' %}?status=active&amp;assignment=unassigned"><span class="stat-icon rose">!</span><div><small>Active, Unassigned</small><strong>{{ unassigned_total }}</strong></div></a>
+</div>
+
+<div class="stat-grid three">
+  <div class="stat-card"><span class="stat-icon blue">↗</span><div><small>Average First Response</small><strong>{% if average_response_hours != None %}{{ average_response_hours }} h{% else %}No data{% endif %}</strong></div></div>
+  <div class="stat-card"><span class="stat-icon green">✓</span><div><small>Average Resolution Time</small><strong>{% if average_resolution_hours != None %}{{ average_resolution_hours }} h{% else %}No data{% endif %}</strong></div></div>
+  <a class="stat-card" href="{% url 'all_tickets' %}?status=active&amp;priority=critical"><span class="stat-icon amber">⌛</span><div><small>Critical Open</small><strong>{{ critical_total }}</strong></div></a>
+</div>
+
+<div class="two-col">
+  <div class="panel"><div class="panel-head"><h2>Tickets by Status</h2></div><div class="chart-wrap"><canvas id="statusChart" aria-label="Tickets by status chart"></canvas></div></div>
+  <div class="panel"><div class="panel-head"><h2>Tickets by Priority</h2></div><div class="chart-wrap"><canvas id="priorityChart" aria-label="Tickets by priority chart"></canvas></div></div>
+</div>
+
+<div class="two-col">
+  <div class="panel">
+    <div class="panel-head"><h2>Category Breakdown</h2></div>
+    <table class="inner-table"><thead><tr><th>Category</th><th>Tickets</th><th>Share</th></tr></thead><tbody>
+      {% for item in by_category %}<tr><td><a class="table-link" href="{% url 'all_tickets' %}?category={{ item.category_id }}">{{ item.category__name }}</a></td><td>{{ item.total }}</td><td>{{ item.share_percent }}%</td></tr>
+      {% empty %}<tr><td colspan="3" class="empty">No ticket data yet.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>User Assignment Workload</h2></div>
+    <table class="inner-table"><thead><tr><th>User</th><th>Active</th><th>Total Assigned</th></tr></thead><tbody>
+      {% for technician in technicians %}<tr><td><a class="table-link" href="{% url 'all_tickets' %}?assigned_to={{ technician.pk }}">{{ technician.get_full_name|default:technician.username }}</a></td><td>{{ technician.active_tickets }}</td><td>{{ technician.total_tickets }}</td></tr>
+      {% empty %}<tr><td colspan="3" class="empty">No users found.</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
 {% endblock %}
-{% block scripts %}<script>
-const sL=[{% for x in by_status %}"{{x.status|title}}",{% endfor %}], sD=[{% for x in by_status %}{{x.total}},{% endfor %}];
-const pL=[{% for x in by_priority %}"{{x.priority|title}}",{% endfor %}], pD=[{% for x in by_priority %}{{x.total}},{% endfor %}];
-new Chart(document.getElementById('statusChart'),{type:'doughnut',data:{labels:sL,datasets:[{data:sD}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
-new Chart(document.getElementById('priorityChart'),{type:'bar',data:{labels:pL,datasets:[{label:'Tickets',data:pD,borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
-</script>{% endblock %}
+{% block scripts %}
+<script>
+const statusLabels = [{% for item in by_status %}"{{ item.status|title }}",{% endfor %}];
+const statusValues = [{% for item in by_status %}{{ item.total }},{% endfor %}];
+const statusFilters = [{% for item in by_status %}"{{ item.status }}",{% endfor %}];
+const priorityLabels = [{% for item in by_priority %}"{{ item.priority|title }}",{% endfor %}];
+const priorityValues = [{% for item in by_priority %}{{ item.total }},{% endfor %}];
+const ticketListUrl = "{% url 'all_tickets' %}";
+
+new Chart(document.getElementById('statusChart'), {
+  type: 'doughnut',
+  data: { labels: statusLabels, datasets: [{ data: statusValues }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, onClick: (event, elements) => {
+    if (elements.length) window.location.href = `${ticketListUrl}?status=${encodeURIComponent(statusFilters[elements[0].index])}`;
+  } }
+});
+new Chart(document.getElementById('priorityChart'), {
+  type: 'bar',
+  data: { labels: priorityLabels, datasets: [{ label: 'Tickets', data: priorityValues, borderRadius: 8 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }, onClick: (event, elements) => {
+    if (elements.length) window.location.href = `${ticketListUrl}?priority=${encodeURIComponent(priorityLabels[elements[0].index].toLowerCase())}`;
+  } }
+});
+</script>
+{% endblock %}

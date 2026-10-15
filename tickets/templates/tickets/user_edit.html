@@ -1,0 +1,17 @@
+{% extends 'tickets/base.html' %}{% block title %}Edit Account{% endblock %}{% block page_label %}User Management{% endblock %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">ACCESS CONTROL</span><h1>Edit account</h1><p>Update {{ target_user.get_full_name|default:target_user.username }}’s details and access.</p></div></div>
+<form method="post" enctype="multipart/form-data" class="form-card">{% csrf_token %}
+  <div class="form-grid">
+    <div><label for="{{ form.first_name.id_for_label }}">First name</label>{{ form.first_name }}{{ form.first_name.errors }}</div>
+    <div><label for="{{ form.last_name.id_for_label }}">Last name</label>{{ form.last_name }}{{ form.last_name.errors }}</div>
+    <div class="span-2"><label for="{{ form.email.id_for_label }}">Email</label>{{ form.email }}{{ form.email.errors }}</div>
+    <div><label for="{{ form.role.id_for_label }}">Role</label>{{ form.role }}{{ form.role.errors }}</div>
+    <div><label for="{{ form.department.id_for_label }}">Department</label>{{ form.department }}{{ form.department.errors }}</div>
+    <div><label for="{{ form.profile_picture.id_for_label }}">Profile picture</label>{{ form.profile_picture }}{{ form.profile_picture.errors }}</div>
+    <div><label for="{{ form.new_password.id_for_label }}">Set a new password (optional)</label><div class="form-password-wrap">{{ form.new_password }}<button class="password-toggle" id="managed-new-password-toggle" type="button" aria-controls="{{ form.new_password.id_for_label }}" aria-label="Show password" title="Show password" onclick="togglePassword('{{ form.new_password.id_for_label }}', 'managed-new-password-toggle')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div>{{ form.new_password.errors }}</div>
+    <div class="check"><label for="{{ form.is_active.id_for_label }}">Active account</label>{{ form.is_active }}</div>
+  </div>
+  <div class="form-actions"><a href="{% url 'user_management' %}" class="btn ghost">Cancel</a><button type="submit" class="btn primary">Save account</button></div>
+</form>
+{% endblock %}
